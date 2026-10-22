@@ -33,6 +33,27 @@ def test_processar_pedido_pedido_vazio():
     
     assert resultado == 'ERRO: pedido vazio'
 
+def test_processar_pedido_cep_invalido():
+    gerenciador = GerenciadorPedidos()
+    gerenciador.adicionar_item("produto1", 2, 10.0)
+    resultado = gerenciador.processar_pedido("Paula", "exemplo@ex.com", "outro", "pix", 0, "Rua A", "123", "Cidade X", "PE", "1234567")
+
+    assert resultado == 'ERRO: cep invalido'
+
+def test_processar_pedido_produto_invalido():
+    gerenciador = GerenciadorPedidos()
+    gerenciador.adicionar_item("calculadora", 2, 10.0)
+    resultado = gerenciador.processar_pedido("Paula", "exemplo@ex.com", "comum", "pix", 0, "Rua A", "123", "Cidade X", "PE", "12345678")
+
+    assert resultado == 'ERRO: produto inexistente calculadora'
+
+def test_processar_pedido_estoque_insuficiente():
+    gerenciador = GerenciadorPedidos()
+    gerenciador.adicionar_item("CALCULADORA", 6, 10.0)
+    resultado = gerenciador.processar_pedido("Paula", "exemplo@ex.com", "comum", "pix", 0, "Rua A", "123", "Cidade X", "PE", "12346578")
+
+    assert resultado == 'ERRO: estoque insuficiente CALCULADORA'
+
 
 
 
