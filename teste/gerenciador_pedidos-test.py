@@ -54,6 +54,12 @@ def test_processar_pedido_estoque_insuficiente():
 
     assert resultado == 'ERRO: estoque insuficiente CALCULADORA'
 
+def test_processar_cliente_desconhecido():
+    gerenciador = GerenciadorPedidos()
+    gerenciador.adicionar_item("CALCULADORA", 1, 10.0)
+    resultado = gerenciador.processar_pedido("Paula", "exemplo@ex.com", "comum", "pix", 0, "Rua A", "123", "Cidade X", "PE", "12346578")
+
+    assert resultado == 'ERRO: tipo de cliente desconhecido'
 
 
 
