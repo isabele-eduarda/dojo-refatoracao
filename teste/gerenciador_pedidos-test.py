@@ -21,6 +21,13 @@ def test_processar_pedido_cliente_sem_nome():
 
     assert resultado == 'ERRO: cliente sem nome'
 
+def test_processar_pedido_email_invalido():
+    gerenciador = GerenciadorPedidos()
+    resultado = gerenciador.processar_pedido("Paula", "exemplo", "comum", "pix", 0, "Rua A", "123", "Cidade X", "PE", "123457")
+
+    assert resultado == 'ERRO: email invalido'
+
+
 
 
 
