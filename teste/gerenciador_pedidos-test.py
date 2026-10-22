@@ -27,6 +27,12 @@ def test_processar_pedido_email_invalido():
 
     assert resultado == 'ERRO: email invalido'
 
+def test_processar_pedido_pedido_vazio():
+    gerenciador = GerenciadorPedidos()
+    resultado = gerenciador.processar_pedido("Paula", "exemplo@ex.com", "comum", "pix", 0, "Rua A", "123", "Cidade X", "PE", "123457")
+    
+    assert resultado == 'ERRO: pedido vazio'
+
 
 
 
