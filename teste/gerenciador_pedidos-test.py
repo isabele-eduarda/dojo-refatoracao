@@ -15,4 +15,12 @@ def test_adicionar_item():
     assert len(gerenciador.itens) == 2
     assert gerenciador.itens == [['produto1', '2', '10.0'], ['produto2', '1', '20.0']]
    
+def test_processar_pedido_cliente_sem_nome():
+    gerenciador = GerenciadorPedidos()
+    resultado = gerenciador.processar_pedido("", "exemplo", "comum", "pix", 0, "Rua A", "123", "Cidade X", "PE", "123457")
+
+    assert resultado == 'ERRO: cliente sem nome'
+
+
+
 
