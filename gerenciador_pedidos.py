@@ -1,7 +1,3 @@
-'''Code smells 001 - Classe grande
-Problema: A classe GerenciadorPedidos é grande e possui muitas responsabilidades, 
-o que dificulta a manutenção e a compreensão do código.'''
-
 class GerenciadorPedidos:
     def __init__(self):
         self.itens = []
@@ -12,15 +8,11 @@ class GerenciadorPedidos:
         self.estoque["CADERNO"] = 50
         self.estoque["MOCHILA"] = 10
         self.estoque["CALCULADORA"] = 5
-
-    '''Code smells 002 - Obsessão por primitivos
-    Problema: uso do primitivo str() para armazenar quantidade e preço, o que pode levar a erros de conversão e dificulta a manipulação dos dados.'''
+    # ADICIONA UM ITEM AO PEDIDO, COM QUANTIDADE E PREÇO
     def adicionar_item(self, produto, qtd, preco):
         self.itens.append([produto, str(qtd), str(preco)])
     
-    '''Code smells 003 - Método longo
-    Code smells 004 - Lista longa de parâmetros
-    Problema: dificulta a leitura e a manutenção do código.'''
+    # PROCESSA O PEDIDO, VERIFICANDO ERROS
     def processar_pedido(self, nome, email, tipo_cliente, pagamento, parcelas,
                          rua, numero, cidade, uf, cep): 
         if nome is None or nome.strip() == "":
@@ -36,16 +28,11 @@ class GerenciadorPedidos:
                 return "ERRO: produto inexistente " + item[0]
             if self.estoque[item[0]] < int(item[1]):
                 return "ERRO: estoque insuficiente " + item[0]
-               
+        # CALCULA SUBTOTAL
         subtotal = 0
         for item in self.itens:
             subtotal += int(item[1]) * float(item[2])
-        
-        '''Code smells 005 - Cadeia de condicionais
-            Problema: Sempre que tiver uma nova regra, terá que adicionar mais um elif, 
-            assim a condicional vai crescendo e ficando difícil de manter.
-        '''
-        
+        # APLICA DESCONTO DE ACORDO COM O TIPO DE CLIENTE
         desconto = 0
         if tipo_cliente == "COMUM":
             if subtotal > 500:
@@ -59,7 +46,7 @@ class GerenciadorPedidos:
             desconto = subtotal * 0.20
         else:
             return "ERRO: tipo de cliente desconhecido"
-        
+        # CALCULA FRETE DE ACORDO COM O ESTADO (UF)
         frete = 0
         if uf == "PE":
             frete = 12.5
@@ -70,7 +57,7 @@ class GerenciadorPedidos:
             frete = 39.9
         if subtotal - desconto > 300 or tipo_cliente == "VIP":
             frete = 0
-
+        # CALCULA TOTAL E APLICA TAXAS DE ACORDO COM A FORMA DE PAGAMENTO
         total = subtotal - desconto + frete
         if pagamento == "PIX":
             total = total * 0.95
@@ -84,10 +71,10 @@ class GerenciadorPedidos:
         else:
             return "ERRO: forma de pagamento invalida"
         total = round(total * 100.0) / 100.0
-
+        # ATUALIZA ESTOQUE
         for item in self.itens:
             self.estoque[item[0]] = self.estoque[item[0]] - int(item[1])
-
+        # SALVA PEDIDO EM ARQUIVO CSV
         endereco = rua + ", " + numero + ", " + cidade + "/" + uf + ", CEP " + cep
 
         try:
@@ -97,7 +84,7 @@ class GerenciadorPedidos:
             f.close()
         except OSError as e:
             print("Falha ao salvar pedido: " + str(e))
-
+        # ENVIA EMAIL DE CONFIRMACAO
         mensagem = "Ola " + nome + ", seu pedido foi confirmado. "
         if tipo_cliente == "VIP":
             mensagem += "Obrigado por ser VIP! Frete gratis garantido. "
@@ -105,17 +92,12 @@ class GerenciadorPedidos:
             mensagem += "Desconto de colaborador aplicado. "
         mensagem += "Total: R$ " + "%.2f" % total + ". Entrega em: " + endereco
         print("[EMAIL para " + email + "] " + mensagem)
-
+        # SALVA PEDIDO NO HISTORICO
         self.historico.append(nome + "|" + tipo_cliente + "|" + str(total))
         self.total_vendido += total
         self.itens.clear()
         return "OK: " + "%.2f" % total
-    
-    '''Code smells 006 - Código duplicado
-    Code smells 007 - Metodo longo
-    Problema: O cálculo de desconto e frete é feito tanto no método processar_pedido quanto no método calcular_orcamento, 
-    o que gera duplicação de código e dificulta a manutenção.'''
-
+    # CALCULA O ORCAMENTO DO PEDIDO SEM PROCESSAR
     def calcular_orcamento(self, tipo_cliente, uf):
         subtotal = 0
         for item in self.itens:
@@ -142,7 +124,7 @@ class GerenciadorPedidos:
         if subtotal - desconto > 300 or tipo_cliente == "VIP":
             frete = 0
         return round((subtotal - desconto + frete) * 100.0) / 100.0
-
+    # GERA UM RELATORIO DE VENDAS COM O HISTORICO
     def gerar_relatorio(self):
         r = "=== RELATORIO DE VENDAS ===\n"
         vip = 0
@@ -164,7 +146,7 @@ class GerenciadorPedidos:
         if self.total_vendido > 10000:
             r += "Meta mensal atingida!\n"
         return r
-
+    # VERIFICA ESTOQUE E ENVIA ALERTA POR EMAIL SE NECESSARIO
     def verificar_estoque(self):
         alerta = ""
         for produto in self.estoque:
@@ -173,9 +155,7 @@ class GerenciadorPedidos:
                            + str(self.estoque[produto]) + ")\n")
                 print("[EMAIL para compras@loja.com] Repor " + produto)
         return alerta
-    
-    '''Code smells 008 - Cadeia de condicionais
-    Problema: Sempre que tiver uma nova regra, terá que adicionar mais um elif'''
+    # ENVIA MENSAGEM PROMOCIONAL DE ACORDO COM O TIPO DE CLIENTE
     def mensagem_promocional(self, tipo_cliente):
         if tipo_cliente == "VIP":
             return "Ofertas exclusivas: 15% em compras acima de R$ 500!"
